@@ -8,16 +8,16 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
+type Postgres struct {
+	dbName, dbUser, dbPassword string
+}
+
 func NewPostgres() *Postgres {
 	return &Postgres{
 		dbName:     "test",
 		dbUser:     "my-secret-user",
 		dbPassword: "my-secret-pwd",
 	}
-}
-
-type Postgres struct {
-	dbName, dbUser, dbPassword string
 }
 
 func (p *Postgres) Type() Type {
