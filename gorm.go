@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/creawill-com/containers/driver"
-	"github.com/testcontainers/testcontainers-go"
+	testcontainers "github.com/testcontainers/testcontainers-go"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

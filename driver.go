@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/creawill-com/containers/driver"
-	"github.com/testcontainers/testcontainers-go"
+	testcontainers "github.com/testcontainers/testcontainers-go"
 )
 
 type Driver interface {

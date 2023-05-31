@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/testcontainers/testcontainers-go"
+	testcontainers "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
