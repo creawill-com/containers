@@ -14,22 +14,13 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func NewGorm(d Driver) *Gorm {
-	return &Gorm{
-		driver: d,
-	}
-}
-
 type Gorm struct {
-	driver Driver
-
-	c testcontainers.Container
+	db *gorm.DB
+	c  testcontainers.Container
 }
 
-func (g *Gorm) DB(ctx context.Context) *gorm.DB {
-	var err error
-
-	g.c, err = g.driver.GenericContainer(ctx)
+func NewGorm(ctx context.Context, d Driver) *Gorm {
+	c, err := d.GenericContainer(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -43,14 +34,25 @@ func (g *Gorm) DB(ctx context.Context) *gorm.DB {
 		},
 	)
 
-	db, err := gorm.Open(g.resolveDialector(ctx, g.c), &gorm.Config{
+	db, err := gorm.Open(resolveGormDialector(ctx, d, c), &gorm.Config{
 		Logger: newLogger,
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	return db
+	return &Gorm{
+		db: db,
+		c:  c,
+	}
+}
+
+func (g *Gorm) DB() *gorm.DB {
+	if g.db == nil {
+		panic(errors.New("db is nil"))
+	}
+
+	return g.db
 }
 
 func (g *Gorm) Terminate(ctx context.Context) {
@@ -64,10 +66,10 @@ func (g *Gorm) Terminate(ctx context.Context) {
 	}
 }
 
-func (g *Gorm) resolveDialector(ctx context.Context, c testcontainers.Container) gorm.Dialector {
-	switch g.driver.Type() {
+func resolveGormDialector(ctx context.Context, d Driver, c testcontainers.Container) gorm.Dialector {
+	switch d.Type() {
 	case driver.TypePostgres:
-		return postgres.Open(g.driver.Dsn(ctx, c))
+		return postgres.Open(d.Dsn(ctx, c))
 	}
 
 	panic(errors.New("can`t resolve dialector"))
